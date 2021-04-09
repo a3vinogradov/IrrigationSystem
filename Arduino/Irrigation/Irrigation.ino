@@ -48,6 +48,12 @@ void loop()
     
     delay(100);
   }
+  if (val > 700){
+    digitalWrite(releyPin, HIGH);
+    delay(8000);
+    digitalWrite(releyPin, LOW);
+    delay(10000); 
+  }
 }
 void DrawDisplay(int mhVal, int relBut){
   display.clearDisplay();
