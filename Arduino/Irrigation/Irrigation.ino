@@ -5,12 +5,15 @@
 // Выводы, подключенные к датчику
 #define sensorPower 7
 #define sensorPin A0
+#define buttonPin 8
+#define releyPin 9
+#define pompRequestLed 10
 
 MHSensor Sensor(sensorPower, sensorPin);
 Adafruit_PCD8544 display = Adafruit_PCD8544(6, 5, 4, 3, 2);
 
 void setup(){ 
-  Serial.begin(9600);
+  //Serial.begin(9600);
 
   display.begin();
   display.clearDisplay();
@@ -23,26 +26,39 @@ void setup(){
   display.setTextColor(BLACK); // установка цвета текста
   display.setCursor(0,0); // установка позиции курсора
     
-  display.println("Hello world!");
+  display.println("Irrigation");
   display.display();
+
+  pinMode(releyPin, OUTPUT);
+  pinMode(pompRequestLed, OUTPUT);
 }
 
 void loop() 
 {
   // получить показание из функции ниже и напечатать его
-  Serial.print("Analog output: ");
+  //Serial.print("Analog output: ");
   int val = Sensor.GetValue();
-  Serial.println( val);
-  DrawDisplay(val);
-  
+  //Serial.println( val);
 
-  delay(2000);
+  for(int i=0; i<20; i++){  
+    int butVal = !digitalRead(buttonPin);
+    //Serial.print("butVal = "); Serial.println( butVal);
+    digitalWrite(releyPin, butVal);
+    DrawDisplay(val, butVal);
+    
+    delay(100);
+  }
 }
-void DrawDisplay(int mhVal){
+void DrawDisplay(int mhVal, int relBut){
   display.clearDisplay();
   display.setCursor(0,0); // установка позиции курсора
-  display.println("Hello world!");
+  display.println("Irrigation");
   display.setCursor(0,10);
   display.println(mhVal);
+  display.setCursor(0,20);
+  display.print("Pomp: "); 
+  display.println((relBut?"ON":"OFF"));
   display.display();
+
+  digitalWrite(pompRequestLed, (mhVal > 600?HIGH:LOW));
 }
