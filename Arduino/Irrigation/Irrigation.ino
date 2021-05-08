@@ -1,70 +1,68 @@
 #include "MHSensor.h"
-#include <Adafruit_GFX.h>
-#include <Adafruit_PCD8544.h>
+//#include <Adafruit_GFX.h>
+//#include <Adafruit_PCD8544.h>
+#include <LiquidCrystal.h>
 
-// Выводы, подключенные к датчику
-#define sensorPower 7
+// вывод управления реле
+#define releyPin 5
+
+// Выводы, подключенные к датчику влажности почвы
 #define sensorPin A0
-#define buttonPin 8
-#define releyPin 9
-#define pompRequestLed 10
+#define sensorPower 6
+
+// выводы на дисплей LCD 1602
+#define DisplayRS 12 //RS, E, DB4, DB5, DB6, DB7
+#define DisplayE 11
+#define DisplayDB4 10
+#define DisplayDB5 9
+#define DisplayDB6 8
+#define DisplayDB7 7
+
+// кнопка принудительного включения насоса
+#define buttonPin 4
+//#define pompRequestLed 10
 
 MHSensor Sensor(sensorPower, sensorPin);
-Adafruit_PCD8544 display = Adafruit_PCD8544(6, 5, 4, 3, 2);
-
+LiquidCrystal lcd(DisplayRS,DisplayE,DisplayDB4,DisplayDB5,DisplayDB6, DisplayDB7);
+int MoistreMax = 0;
 void setup(){ 
-  //Serial.begin(9600);
-
-  display.begin();
-  display.clearDisplay();
-  display.display();  
-
-  display.setContrast(50); // установка контраста
-  delay(1000);
-
-  display.setTextSize(1); // установка размера шрифта
-  display.setTextColor(BLACK); // установка цвета текста
-  display.setCursor(0,0); // установка позиции курсора
-    
-  display.println("Irrigation");
-  display.display();
-
+  MoistreMax = 700;
+  lcd.begin(16, 2);
   pinMode(releyPin, OUTPUT);
-  pinMode(pompRequestLed, OUTPUT);
+  //pinMode(pompRequestLed, OUTPUT);
 }
 
 void loop() 
 {
   // получить показание из функции ниже и напечатать его
-  //Serial.print("Analog output: ");
   int val = Sensor.GetValue();
-  //Serial.println( val);
 
   for(int i=0; i<20; i++){  
     int butVal = !digitalRead(buttonPin);
-    //Serial.print("butVal = "); Serial.println( butVal);
     digitalWrite(releyPin, butVal);
-    DrawDisplay(val, butVal);
+    DrawDisplay(val, MoistreMax, butVal);
     
     delay(100);
   }
-  if (val > 700){
+  if (val > MoistreMax){
     digitalWrite(releyPin, HIGH);
     delay(8000);
     digitalWrite(releyPin, LOW);
     delay(10000); 
-  }
+   }
 }
-void DrawDisplay(int mhVal, int relBut){
-  display.clearDisplay();
-  display.setCursor(0,0); // установка позиции курсора
-  display.println("Irrigation");
-  display.setCursor(0,10);
-  display.println(mhVal);
-  display.setCursor(0,20);
-  display.print("Pomp: "); 
-  display.println((relBut?"ON":"OFF"));
-  display.display();
+void DrawDisplay(int mhVal, int mhMax, int relBut){
+  lcd.clear();
+  // 1 строка
+  lcd.setCursor(0, 0);
+  lcd.print("Mstr: ");
+  lcd.print(mhVal);
+  lcd.print("/");
+  lcd.print(mhMax);
+  
+  lcd.setCursor(0, 1);
+  lcd.print("But: ");
+  lcd.print((relBut?"ON":"OFF"));
 
-  digitalWrite(pompRequestLed, (mhVal > 600?HIGH:LOW));
+  //digitalWrite(pompRequestLed, (mhVal > 600?HIGH:LOW));
 }
