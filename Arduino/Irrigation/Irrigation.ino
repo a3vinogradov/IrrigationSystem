@@ -45,7 +45,7 @@ void loop()
     delay(100);
   }
 
-  int MoistreVal = Sensor.GetValue();
+  MoistreVal = Sensor.GetValue();
   if (MoistreVal > MoistreMax){
     PompCount++;
     DrawDisplay(MoistreVal, MoistreMax, 1, PompCount);
