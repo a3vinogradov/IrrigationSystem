@@ -1,17 +1,17 @@
 // "Метеостанция" на столе: 
 // NodeMCU v1
-// bmp280 (D1->SCL; D2->SDA; Gnd; Vcc)
-// dht11 (D5->S; Vcc; Gnd)
+// bmp280 (D1(GPIO 05)->SCL; D2(GPIO 04)->SDA; Gnd; Vcc)
+// dht11 (GPIO 02->S; Vcc; Gnd)
 
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BMP280.h>
 Adafruit_BMP280 bmp280;
 
 #include "DHT.h"
-DHT dht(D5, DHT11);
+DHT dht(2, DHT11);
 
-#include <Arduino.h>
-#include <ESP8266WiFi.h>
+//#include <Arduino.h>
+#include "ESP8266WiFi.h"
 #include <ESP8266WiFiMulti.h>
 #include <ESP8266HTTPClient.h>
 #include <WiFiClient.h>
@@ -47,7 +47,7 @@ void loop()
   Serial.println("\n =============================== \n");
       
   delay(600000);
-  
+  //delay(10000);
 }
 
 void SetupSensors()
@@ -58,6 +58,7 @@ void SetupSensors()
     Serial.println("Could not find a valid BMP280 sensor, check wiring!");
   }
   dht.begin();
+  delay(2000);
 }
 void ReadSensors()
 {
@@ -100,6 +101,7 @@ void SentMessage()
           String("},{\"id\": \"Pressure1\",\"value\": ")+
           pressure +
           String("},{\"id\": \"Humidity1\",\"value\": ")+
+          
           humidity +
           String("}]}]}");
     
