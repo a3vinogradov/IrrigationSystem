@@ -39,6 +39,8 @@ void TaskTime::DoTask()
   Serial.print("Send struct (");
   Serial.print(sizeof(buf));
   Serial.println(" bytes)");
+  Serial.print("T (*C) = "); Serial.println(buf.temperature);
+  Serial.print("H (%) = "); Serial.println(buf.humidity);
   byte sended = _UART.Send(&buf);
   Serial.print("Sended ");
   Serial.print(sended);
