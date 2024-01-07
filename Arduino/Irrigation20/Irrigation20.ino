@@ -1,6 +1,5 @@
 //#include <Arduino.h>
 #include "UIController.h"
-#include "UICTask.h"
 #include "MeasureStore.h"
 #include "IrrigateTask.h"
 
@@ -25,17 +24,16 @@
 MeasureStoreSingle MoistreMeasureStore; 
 
 
-UIController gUIC(DISP_SCLK_PIN, DISP_DIN_PIN, DISP_DC_PIN, DISP_CS_PIN, DISP_RST_PIN, BUTTON_PIN, LED_PIN, ENCODER_S1_PIN, ENCODER_S2_PIN, ENCODER_KEY_PIN, &MoistreMeasureStore);
-UICTask gUICTask(&gUIC);
+UIController gUIC(DISP_SCLK_PIN, DISP_DIN_PIN, DISP_DC_PIN, DISP_CS_PIN, DISP_RST_PIN, LED_PIN, ENCODER_S1_PIN, ENCODER_S2_PIN, ENCODER_KEY_PIN, &MoistreMeasureStore);
 
 IrrigateTask gIrrigateTask(MSTR_PIN, &MoistreMeasureStore, RELAY_PIN);
 
 void setup() {
   gIrrigateTask.Setup();
-  gUICTask.Setup();
+  gUIC.Setup();
 }
 
 void loop() {
   gIrrigateTask.Exec();
-  gUICTask.Exec();
+  gUIC.Exec();
 }

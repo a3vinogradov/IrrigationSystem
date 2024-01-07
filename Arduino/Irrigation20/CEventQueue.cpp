@@ -18,7 +18,7 @@ byte CEventQueue::Size()
 
 bool CEventQueue::IsEmpty()
 {
-  return _size == 0;
+  return Size() == 0;
 }
 
 void CEventQueue::Push(Event value)
@@ -47,5 +47,8 @@ Event CEventQueue::Pop()
 
 void CEventQueue::Clear()
 {
-  _size = 0;
+  while (!IsEmpty())
+  {
+    Pop();
+  };
 }
