@@ -27,11 +27,11 @@
 
     if (_pomp.GetState()==HIGH)
     {
-      _pomp.OFF();
+      //_pomp.OFF();
     }
     else
     {
-      _pomp.ON();
+      //_pomp.ON();
     }
   }
   

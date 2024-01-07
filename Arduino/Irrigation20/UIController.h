@@ -3,7 +3,7 @@
 
 #include <Adafruit_GFX.h>
 #include <Adafruit_PCD8544.h>
-#include "ButtonController.h"
+//#include "ButtonController.h"
 #include "LedController.h"
 #include "MeasureStore.h"
 
@@ -11,7 +11,7 @@ class UIController
 {
   private:
   Adafruit_PCD8544 _display; 
-  ButtonController _button;
+  //ButtonController _button;
   LedController _ledGreen;  
   
   int _lastButtonState;
@@ -23,7 +23,6 @@ class UIController
                const int dispDC, 
                const int dispCS, 
                const int dispRST, 
-               const int butPin, 
                const int ledPin, 
                const int encS1, 
                const int encS2, 

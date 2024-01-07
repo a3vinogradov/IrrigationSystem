@@ -5,9 +5,11 @@
 
 enum class EventType
 {
+    EncoderChange = 3,
     ButtonDown = 1,
     ButtonUp = 2,
-    EncoderChange = 3
+    ButtonClick = 4,
+    ButtonDoubleClick = 5
 };
 
 struct Event

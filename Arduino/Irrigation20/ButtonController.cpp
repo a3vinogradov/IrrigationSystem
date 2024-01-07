@@ -1,9 +1,12 @@
 #include "ButtonController.h"
 #include <Arduino.h>
 
-ButtonController::ButtonController(const int pin)
+ButtonController::ButtonController(const int pin, const int id, CQueue* queue):
+  _button(pin) 
 {
+  _id = id;
   _pinState = pin;
+  _queue = queue;
 }
 
 void ButtonController::Setup()
