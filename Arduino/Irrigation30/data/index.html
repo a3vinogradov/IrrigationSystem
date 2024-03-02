@@ -1,0 +1,48 @@
+<html>
+  <head>
+	<meta charset="UTF-8" />
+    <title>
+	  Автополивалка
+	</title>
+	<link rel="stylesheet" href="style.css" media="all">
+  </head>
+  <body>
+	<nav class="top-menu">
+		<ul class="menu-main">
+		  <li><p>Меню<p></li>
+		  <li><a href="" class="current">Домашняя</a></li>
+		  <li><a href="settings.html">Настройки</a></li>
+		  <li><a href="about.html">О проекте</a></li>
+		</ul>
+	</nav>
+    <h1>Автополивалка</h1>
+	
+	<table class="IndexPage">
+	<tr>
+	  <th>Влажность почвы (текущая / целевая)</th>
+	</tr>
+	<tr>
+	   <td><%CurrentHummidity%> / <%TargetHummidity%></td>  
+    </tr>
+	<tr>
+	  <th>Автоматический полив</th>
+	</tr>
+	<tr>
+	  <td>
+	  <p>Состояние : <%IrrigationState%> </p> 
+ 	  </td>
+	</table>
+	<div class="dark">
+    <form method="post" action="action.html">
+      <div class="darkcontainer">
+		<input type="hidden" name="actionType" id="actionType" value="<%ActionTypeState%>">	  
+        <input type="submit" value="<%BtnAutoIrrText%>">
+	  </div>
+    </form>
+    <form method="post" action="index.html">
+      <div class="darkcontainer">
+        <input type="submit" value="Обновить">
+	  </div>
+    </form>	</div>
+  </body>
+</html>

@@ -1,0 +1,34 @@
+<html>
+  <head>
+	<meta charset="UTF-8" />
+    <title>
+	  Info
+	</title>
+	<link rel="stylesheet" href="style.css" media="all">
+  </head>
+  <body>
+	<nav class="top-menu">
+		<ul class="menu-main">
+		  <li><p>Меню<p></li>
+		  <li><a href="index.html">Домашняя</a></li>
+		  <li><a href="settings.html">Настройки</a></li>
+		  <li><a href="about.html" class="current">О проекте</a></li>
+		</ul>
+	</nav>
+	<h1><%Header%></h1>
+	<p><%InfoContent%></p>
+	
+	</br>
+	<div class="dark">
+    <form method="post" action="<%InfoAction%>">
+		<input type="hidden" name="actionType" id="actionType" value=<%InfoActionType%>>
+		<div class="darkcontainer">
+			<input hidden="true" type="text" name="update" value ="true">
+			<input type="submit" value="<%InfoButtonText%>">
+		</div>
+    </form>
+	</div>	
+	<h2>Содержимое запроса</h2>
+	<p><%RequestInfo%></p>
+  </body>
+</html>
