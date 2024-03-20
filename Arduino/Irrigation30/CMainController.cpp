@@ -82,9 +82,9 @@ void CMainController::Exec() {
   _IrrigationController->Exec();
 }
 
-void CMainController::IrrigationRestart(const int targetMoisture, const int pumpCountMax, const int pumpOnPeriod, const int pumpOffPeriod, const bool autoIrrigation )
+void CMainController::IrrigationRestart(const int maxMoisture, const int targetMoisture, const int pumpCountMax, const int pumpOnPeriod, const int pumpOffPeriod, const bool autoIrrigation )
 {
-    _IrrigationController->Restart(targetMoisture, pumpCountMax, pumpOnPeriod, pumpOffPeriod, autoIrrigation);
+    _IrrigationController->Restart(maxMoisture, targetMoisture, pumpCountMax, pumpOnPeriod, pumpOffPeriod, autoIrrigation);
 };
 
 String CMainController::GetIrrigationState() {

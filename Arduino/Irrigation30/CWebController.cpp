@@ -89,7 +89,7 @@ void CWebController::Setup()
   }
 
   ConfigureWebServer();
-  _MainController->IrrigationRestart(_eeCurrentData.targetHummidity, _eeCurrentData.pumpCountMax, _eeCurrentData.pumpOnPeriod, _eeCurrentData.pumpOffPeriod, _eeCurrentData.autoIrrigationDefault);
+  _MainController->IrrigationRestart(_eeCurrentData.maxHummidity, _eeCurrentData.targetHummidity, _eeCurrentData.pumpCountMax, _eeCurrentData.pumpOnPeriod, _eeCurrentData.pumpOffPeriod, _eeCurrentData.autoIrrigationDefault);
 }
 
 void CWebController::Exec()
@@ -130,6 +130,7 @@ String CWebController::FormatPage(String content, String pageName)
   String staPass = _eeCurrentData.staPassword;
   int currentHummidity = _MainController->GetMHSValue();
   int targetHummidity = _eeCurrentData.targetHummidity;
+  int maxHummidity = _eeCurrentData.maxHummidity;
   bool waterLevel = 1;
   int pumpCountMax = _eeCurrentData.pumpCountMax;
   unsigned long pumpOnPeriod = _eeCurrentData.pumpOnPeriod;
@@ -139,6 +140,7 @@ String CWebController::FormatPage(String content, String pageName)
 
   content.replace("<%CurrentHummidity%>", String(currentHummidity));  
   content.replace("<%TargetHummidity%>", String(targetHummidity));  
+  content.replace("<%MaxHummidity%>", String(maxHummidity));  
   content.replace("<%PumpCountMax%>", String(pumpCountMax));  
   content.replace("<%PumpOnPeriod%>", String(pumpOnPeriod));  
   content.replace("<%PumpoOffPeriod%>", String(pumpOffPeriod));  
@@ -208,6 +210,7 @@ void CWebController::HandleAction()
     {
       _eeCurrentData = eeData;
       _MainController->IrrigationRestart(
+                                    _eeCurrentData.maxHummidity,
                                     _eeCurrentData.targetHummidity,
                                     _eeCurrentData.pumpCountMax,
                                     _eeCurrentData.pumpOnPeriod,
@@ -363,6 +366,10 @@ EEData CWebController::GetDataFromWebServerArgs()
     else if( _webServer->argName(i) == "targethummidity")
     {
       res.targetHummidity = _webServer->arg(i).toInt();
+    }
+    else if( _webServer->argName(i) == "maxhummidity")
+    {
+      res.maxHummidity = _webServer->arg(i).toInt();
     }
     else if( _webServer->argName(i) == "pumpcountmax")
     {

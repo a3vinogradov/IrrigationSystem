@@ -42,7 +42,9 @@
 		
 		<fieldset>
 			<legend>Настройка режима полива </legend><br/>
+			<p><label for="maxhummidity">Максимальное значение влажности почвы </label><input type="text" name="maxhummidity" id="maxhummidity" value="<%MaxHummidity%>"></p>
 			<p><label for="targethummidity">Целевая влажность почвы </label><input type="text" name="targethummidity" id="targethummidity" value="<%TargetHummidity%>"></p>
+			<p>* Максимальное значение должно быть больше целевого</p>
 			<p><label for="pumpcountmax">Количество включений насоса за сессию (MAX) </label><input type="text" name="pumpcountmax" id="pumpcountmax" value="<%PumpCountMax%>"></p>
 			<p><label for="pumponperiod">Продолжительность включения насоса (мс) </label><input type="text" name="pumponperiod" id="pumponperiod" value="<%PumpOnPeriod%>"></p>
 			<p><label for="pumpoffperiod">Продолжительность пауз (мс) </label><input type="text" name="pumpoffperiod" id="pumpoffperiod" value="<%PumpoOffPeriod%>"></p>

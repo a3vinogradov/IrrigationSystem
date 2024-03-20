@@ -21,6 +21,7 @@ struct EEData
   unsigned long pumpOnPeriod;
   unsigned long pumpOffPeriod;
   bool autoIrrigationDefault;
+  int  maxHummidity;
 };
 
 class CEEController

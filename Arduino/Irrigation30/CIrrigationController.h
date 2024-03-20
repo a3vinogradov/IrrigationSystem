@@ -31,7 +31,8 @@ class CIrrigationController
     CBlinkerController* _Pump;
     
     BP _CurBO = BP::NA;
-    int _TargetMoisture = 400;    
+    int _TargetMoisture = 300;    
+    int _MaxMoisture = 400;    
     unsigned long _lastTime;
     unsigned long _period = 20000;
     BP _nextBO = BP::NA;
@@ -49,7 +50,7 @@ class CIrrigationController
                           CMHSController* mhsController);
     void Setup();
     void Exec();  
-    void Restart(const int targetMoisture, const int pumpCountMax, const int pumpOnPeriod, const int pumpOffPeriod, const bool autoIrrigation );
+    void Restart(const int maxMoisture, const int targetMoisture, const int pumpCountMax, const int pumpOnPeriod, const int pumpOffPeriod, const bool autoIrrigation );
 
     IrrigationState GetState();
     void SetAutoIrrigation(const bool isOn);

@@ -49,10 +49,11 @@ void CIrrigationController::Exec()
   }  
 }
 
-void CIrrigationController::Restart(const int targetMoisture, const int pumpCountMax, const int pumpOnPeriod, const int pumpOffPeriod, const bool autoIrrigation)
+void CIrrigationController::Restart(const int maxMoisture, const int targetMoisture, const int pumpCountMax, const int pumpOnPeriod, const int pumpOffPeriod, const bool autoIrrigation)
 {
   _PumpCountMax = pumpCountMax;
   _TargetMoisture = targetMoisture;
+  _MaxMoisture = maxMoisture;
   _PumpOnPeriod = pumpOnPeriod;
   _PumpOffPeriod = pumpOffPeriod;
   _LedR->TurnOff();
@@ -104,7 +105,7 @@ void CIrrigationController::BO1()
 {
   Serial.println("BO1");
   int mstr = _MHSController->GetValue();
-  if (mstr > _TargetMoisture)
+  if (mstr > _MaxMoisture)
   {
     _PumpCount = 0;
     InitBO3();
