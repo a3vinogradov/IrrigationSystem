@@ -3,24 +3,29 @@
 
 #include "CFSController.h"
 #include "CEEController.h"
+#include "CMHSController.h"
+#include "CSN74HC595Controller.h"
+#include "CMainController.h"
 
 #define LOCALSSID "IrrigationSystem32"
-#define APSSID "RT-GPON-6170"//RT-GPON-6170
-#define APPSK  "J8h3f84b97" //J8h3f84b97
+#define APSSID "BelkoNet"//RT-GPON-6170
+#define APPSK  "liskabelko" //J8h3f84b97
 
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 
 class CWebController {
   public:
-    CWebController();
+    ESP8266WebServer* _webServer;
+
+    //CWebController();
+    CWebController(CMainController* mainController);
     static CWebController* GetInstance();
 
     void Setup();
     void Exec();
     void SendContent(int code, String contentType, String content );
     void HandlePage(String pageName);
-    void HandlePageExt(String pageName, String contextType = "text/plain");
     void HandleAction();
     void HandleRoot(); 
     void Reset();
@@ -30,9 +35,11 @@ class CWebController {
 
   private:
     static CWebController* _instance;
+    CSN74HC595Controller* _extGPO;    
     CFSController* _fsController;
     CEEController* _eeController;
-    ESP8266WebServer* _webServer;
+    CMainController* _MainController;
+    
     EEData _eeCurrentData;
 
     void ConfigureWebServer();

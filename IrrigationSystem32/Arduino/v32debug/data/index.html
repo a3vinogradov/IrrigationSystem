@@ -16,31 +16,35 @@
 		  <li><a href="about.html">О проекте</a></li>
 		</ul>
 	</nav>
-    <h1>Домашняя</h1>
+    <h1>Автополивалка</h1>
 	
 	<table class="IndexPage">
 	<tr>
-	  <th>Параметр 1</th>
+	  <th>Влажность почвы (текущая / целевая)</th>
 	</tr>
 	<tr>
-	   <td><%Parameter1%> *C</td> 
-	   <!-- <td>25,0 *C</td>  -->
-	 </tr>
+	   <td><%CurrentHummidity%> / <%TargetHummidity%></td>  
+    </tr>
 	<tr>
-	  <th>Параметр 2</th>
+	  <th>Автоматический полив</th>
 	</tr>
 	<tr>
-	  <td><%Pressure%>Parameter2</td>
-	  <!-- <td>760 мм рт. ст.</td> -->
+	  <td>
+	  <p>Состояние : <%IrrigationState%> </p> 
+ 	  </td>
 	</table>
 	<div class="dark">
-    <form method="post" action="index.html">
+    <form method="post" action="action.html">
       <div class="darkcontainer">
-	    <input hidden="true" type="text" name="update" value ="true">
-        <input type="submit" value="Обновить">
+		<input type="hidden" name="actionType" id="actionType" value="<%ActionTypeState%>">	  
+        <input type="submit" value="<%BtnAutoIrrText%>">
 	  </div>
     </form>
-	</div>
+    <form method="post" action="index.html">
+      <div class="darkcontainer">
+        <input type="submit" value="Обновить">
+	  </div>
+    </form>	</div>
 	
 	
   </body>

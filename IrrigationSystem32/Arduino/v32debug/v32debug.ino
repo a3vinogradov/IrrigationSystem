@@ -12,9 +12,27 @@
 // Подключение esp8266-07
 
 #include "CWebController.h"
+#include "CMHSController.h"
+#include "CSN74HC595Controller.h"
+#include "CMainController.h"
+
 #define ResetPin 13 
 
-CWebController* webController = CWebController::GetInstance();
+#define PIN_EGPO_DS 14
+#define PIN_EGPO_ST 12
+#define PIN_EGPO_SH 15
+
+CSN74HC595Controller gExtGPO(PIN_EGPO_DS,PIN_EGPO_ST,PIN_EGPO_SH);
+CSN74HC595Controller *pExtGPO = &gExtGPO; 
+
+CMHSController gMHSController;
+CMHSController *pMHSController = &gMHSController;
+
+CMainController gMainController(pMHSController, pExtGPO);
+CMainController *pMainController = &gMainController; 
+
+CWebController gWebController(pMainController);
+CWebController *pWebController = &gWebController;
 
 void setup() {
   Serial.begin(115200);
@@ -23,7 +41,7 @@ void setup() {
   Serial.println("");
   Serial.println("Init Start setup");
 
-  // Пин GPIO13 для обычного, нормального старта должен быть прижат к Gnd 
+  // Пин ResetPin для обычного, нормального старта должен быть прижат к Gnd 
   // Если пин будет прижат к Vcc, будет выполнен сброс к настройкам по умолчанию. (Точка доступа с именем AccessPointAuto)
   // проверка нажатия кнопки ресет
   if (digitalRead(ResetPin) == HIGH)
@@ -31,15 +49,20 @@ void setup() {
     delay(100);
     if (digitalRead(ResetPin) == HIGH)
     {
-      webController->Reset();
+      pWebController->Reset();
       Serial.println("Reset configuration");
     }
   }
   
-  webController->Setup();
+  pExtGPO->Setup();  
+  pMainController->Setup();
+  pWebController->Setup();
+
   Serial.println("End Start setup");
 }
 
 void loop() {
-  webController->Exec();
+  pExtGPO->Exec();
+  pMainController->Exec();
+  pWebController->Exec();
 }

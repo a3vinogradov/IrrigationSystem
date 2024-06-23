@@ -36,25 +36,26 @@ void GHandleAction()
 
 //=======================================
 
-CWebController::CWebController()
+CWebController::CWebController(CMainController* mainController)
 {
   _fsController = new CFSController;
   _eeController = new CEEController;
   _webServer = new ESP8266WebServer(80);
+  _instance = this;
+  _MainController = mainController;
 }
 
 CWebController* CWebController::GetInstance()
 {
-  if(!_instance)
-  {
-    _instance = new CWebController();
-  }
-  
   return _instance;
 }
 
 void CWebController::Setup()
 {
+  _fsController->Setup();
+  _eeController->Setup();
+  delay(100);
+
   _eeCurrentData = _eeController->ReadData();
   if(_eeCurrentData.dataKey != EEPROM_KEY)
   {
@@ -86,17 +87,13 @@ void CWebController::Setup()
     };
   }
 
-  _fsController->Setup();
-  _eeController->Setup();
-  
-  delay(100);
-
   ConfigureWebServer();
 }
 
 void CWebController::Exec()
 {
-  _webServer->handleClient();  
+  _webServer->handleClient(); 
+  _extGPO->Exec(); 
 }
 
 void CWebController::SendContent(int code, String contentType, String content )
@@ -118,23 +115,6 @@ void CWebController::HandlePage(String pageName)
   }
 }
 
-void CWebController::HandlePageExt(String pageName, String contextType)
-{
-  Serial.print("Reading file "); Serial.print(pageName);
-  String res = _fsController->ReadFile(pageName);
-  if (res == "")
-  {
-    Serial.println("Err!!");
-    _webServer->send(404, "text/plain", "Error reading file!");
-  }
-  else
-  {  
-    Serial.println("Ok!!");
-    //res = FormatPage(res, pageName);
-    _webServer->send(200, contextType, res);
-  }
-}
-
 void CWebController::Reset()
 {
   _eeController->WriteData( _eeController->GetDefaultData());
@@ -142,14 +122,31 @@ void CWebController::Reset()
 
 String CWebController::FormatPage(String content, String pageName)
 {
-  String ver = "0.1-dev";  
+  String ver = "3.2-dev";  
   String apSSID = _eeCurrentData.apSSID;
   String staSSID = _eeCurrentData.staSSID;
   String staPass = _eeCurrentData.staPassword;
-  
+  int currentHummidity = _MainController->GetMHSValue();
+  int targetHummidity = 321; //_eeCurrentData.targetHummidity;
+  int maxHummidity = 432; // _eeCurrentData.maxHummidity;
+  bool waterLevel = 1;
+
   String tagFavicon = "";
   tagFavicon = _fsController->ReadFile("/favicon.b64");
   content.replace("<%Favicon%>", tagFavicon); 
+
+  content.replace("<%CurrentHummidity%>", String(currentHummidity));  
+  content.replace("<%TargetHummidity%>", String(targetHummidity));  
+  content.replace("<%MaxHummidity%>", String(maxHummidity));  
+  //content.replace("<%PumpCountMax%>", String(pumpCountMax));  
+  //content.replace("<%PumpOnPeriod%>", String(pumpOnPeriod));  
+  //content.replace("<%PumpoOffPeriod%>", String(pumpOffPeriod));  
+  //content.replace("<%AutoIrrigationDefault%>", autoIrrigationDefault?"checked":"");  
+
+  content.replace("<%WaterLevel%>", String(waterLevel?"Ok":"Critical level of water!"));  
+  content.replace("<%IrrigationState%>", _MainController->GetIrrigationState());  
+  content.replace("<%BtnAutoIrrText%>", _MainController->GetBtnSwitchStateText()); 
+  content.replace("<%ActionTypeState%>", _MainController->GetActionTypeState()); 
 
   if (_eeCurrentData.wifiMode == EEPROM_WIFI_STA)
   {
@@ -173,42 +170,147 @@ String CWebController::FormatPage(String content, String pageName)
 
 void CWebController::HandleAction()
 {
-  String message = "<html><head><meta charset=\"UTF-8\"/></head><body> ";
-  message += "Number of args received:<br>";
-  message += _webServer->args();      // получить количество параметров
-  message += "\n<br>";               // переход на новую строку
+  String header = "Info";
+  String requestInfo = "Содержимое запроса не определено";
+  String infoContent = "Содержимое страницы не сгенерировано";
+  String infoButtonText = "Не определено";
+  String infoAction = "settings.html";
+  String infoActionType = "none";
+
+  // requestInfo
+  requestInfo  = "Number of args received:<br>";
+  requestInfo += _webServer->args();     // получить количество параметров
+  requestInfo += "\n<br>";               // переход на новую строку
 
   for (int i = 0; i < _webServer->args(); i++) 
   {
-    message += "Arg nº" + (String)i + " –> ";      // добавить текущее значение счетчика
-    message += _webServer->argName(i) + ": ";      // получить имя параметра
-    message += _webServer->arg(i) + "\n<br>";      // получить значение параметра
+    requestInfo += "Arg nº" + (String)i + " –> ";      // добавить текущее значение счетчика
+    requestInfo += _webServer->argName(i) + ": ";      // получить имя параметра
+    requestInfo += _webServer->arg(i) + "\n<br>";      // получить значение параметра
   } 
-  message += "====================================\n<br>\n<br>";
-  
+  //====================================";
   String actionType = GetActionType();
-  message += "actionType = " + actionType; 
+  
   if (actionType == "setWiFiMode")
   {
-    message += "EEPROM Data: \n<br>";
-    message += _eeController->EEDataToString(_eeCurrentData);
-    message += "\n<br>";
+    header = "Установка параметров WiFi";
+    infoContent = "EEPROM Data: \n<br>";
+    infoContent += _eeController->EEDataToString(_eeCurrentData);
+    infoContent += "\n<br>";
   
     EEData eeData = GetDataFromWebServerArgs();
-    message += "Server Data: \n<br>";
-    message += _eeController->EEDataToString(eeData);
-
+    infoContent += "Server Data: \n<br>";
+    infoContent += _eeController->EEDataToString(eeData);
     
     if(_eeController->WriteData(eeData))
     {
       _eeCurrentData = eeData;
-    }    
-  } 
+      // _MainController->IrrigationRestart(
+      //                               _eeCurrentData.maxHummidity,
+      //                               _eeCurrentData.targetHummidity,
+      //                               _eeCurrentData.pumpCountMax,
+      //                               _eeCurrentData.pumpOnPeriod,
+      //                               _eeCurrentData.pumpOffPeriod,
+      //                               _eeCurrentData.autoIrrigationDefault);
+    }
 
-  message += "\n<br>";
-  message += "<br><a href =\"/index.html\">index</a>";
-  message += "</body></html>";
-  SendContent(200, "text/html", message);    // ответить на HTTP запрос
+    infoButtonText = "Назад";
+    infoAction = "settings.html";
+  } 
+  else if (actionType == "testIndicators")
+  {
+    header = "Проверка светодиодной индикации";
+    infoContent = "Все светодиоды на корпусе должны гореть";
+    _MainController->TestIndicators(true); // todo: on/off
+    infoButtonText = "Закончить проверку";
+    infoAction = "action.html";
+    infoActionType = "testIndicatorsOff";    
+    //infoAction = "checkcontrols.html";    
+  } 
+  else if (actionType == "testIndicatorsOff")
+  {
+    header = "Проверка светодиодной индикации";
+    infoContent = "Светодиод индикации питания должен гореть. Остальные три светодиода должны погаснуть.";
+    _MainController->TestIndicators(false);
+    infoButtonText = "Назад";
+    infoAction = "checkcontrols.html";    
+  }
+  else if (actionType == "testBuzzer")
+  {
+    header = "Проверка звуковой сигнализации";
+    infoContent = "Должен прозвучать короткий звуковой сигнал.";
+    _MainController->TestBuzzer(true); 
+    infoButtonText = "Закончить проверку";
+    infoAction = "action.html";
+    infoActionType = "testBuzzerOff";    
+    //infoAction = "checkcontrols.html";    
+  }
+  else if (actionType == "testBuzzerOff")
+  {
+    header = "Проверка звуковой сигнализации";
+    infoContent = "Звуковой сигнал не должен повторяться.";
+    _MainController->TestBuzzer(false);
+    infoButtonText = "Назад";
+    infoAction = "checkcontrols.html";    
+  }
+  else if (actionType == "testPump")
+  {
+    header = "Проверка насоса";
+    infoContent = "Насос должен включиться.";
+    _MainController->TestPump(true); 
+    infoButtonText = "Закончить проверку";
+    infoAction = "action.html";
+    infoActionType = "testPumpOff";    
+  }
+  else if (actionType == "testPumpOff")
+  {
+    header = "Проверка насоса";
+    infoContent = "Насос должен выключиться.";
+    _MainController->TestPump(false); 
+    infoButtonText = "Назад";
+    infoAction = "checkcontrols.html";    
+  }
+  else if (actionType == "testMultiplexor")
+  {
+    header = "Проверка мультиплексора";
+    infoContent = "Напряжение на мультиплексор подано.";
+    //_MainController->TestPump(true); 
+    infoButtonText = "Читать датчики влажности";
+    infoAction = "action.html";
+    infoActionType = "testMultiplexorOff";    
+  }  
+  else if (actionType == "testMultiplexorOff")
+  {
+    header = "Проверка мультиплексора";
+    infoContent = "</p>";
+    infoContent += "<p>Датчик протечки : Ок</p>";
+    infoContent += "<p>Уровень жидкости 1 : Ок</p>";
+    infoContent += "<p>Уровень жидкости 2 : Ок</p>";
+    infoContent += "<p>Уровень жидкости 3 : Ок</p>";
+    infoContent += "<p> датчики прочитаны, напряжение снято </p>";
+    infoContent += "<p>";
+    //_MainController->TestMultiplexor(); 
+    infoButtonText = "Назад";
+    infoAction = "checkcontrols.html";
+  }
+
+  String res = _fsController->ReadFile("/info.html");
+  if (res == "")
+  {
+    _webServer->send(404, "text/plain", "Error reading file info.html!");
+  }
+  else
+  { 
+    res.replace("<%Favicon%>", _fsController->ReadFile("/favicon.b64"));     
+    res.replace("<%Header%>", header); 
+    res.replace("<%InfoContent%>", infoContent); 
+    res.replace("<%RequestInfo%>", requestInfo); 
+    res.replace("<%InfoButtonText%>", infoButtonText); 
+    res.replace("<%InfoAction%>", infoAction); 
+    res.replace("<%InfoActionType%>", infoActionType); 
+    
+    _webServer->send(200, "text/html", res);
+  }
 }
 
 void CWebController::HandleRoot()
