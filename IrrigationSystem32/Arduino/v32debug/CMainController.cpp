@@ -131,6 +131,44 @@ String CMainController::GetActionTypeState(){
   } 
 }
 
+bool CMainController::GetWaterSensor(const int sensNumb)
+{
+  _GPOH->On(); // Подать питание на мультиплексор
+  delay(1);
+  if (sensNumb == 1) // коммутируем заданный в sensNumb вход на выходной пин
+  {
+    _GPOF->On();
+    _GPOG->On();
+  }
+  else if (sensNumb == 2) 
+  {
+    _GPOF->On();
+    _GPOG->Off();
+  }
+  else if (sensNumb == 3) 
+  {
+    _GPOF->Off();
+    _GPOG->On();
+  }
+  else
+  {
+    _GPOF->Off();
+    _GPOG->Off();
+  }
+  delay(1);
+  int res = digitalRead(13);
+  Serial.print("Reading pin 13 = ");
+  Serial.println(res);
+
+  //_GPOH->Off(); // Снять питание с мультиплексора
+
+  return res == HIGH;
+};
+void CMainController::WaterSensorOff()
+{
+  _GPOH->Off();
+};
+
 void CMainController::SetAutoIrrigation(const bool isOn)
 {
   _IrrigationController->SetAutoIrrigation(isOn);

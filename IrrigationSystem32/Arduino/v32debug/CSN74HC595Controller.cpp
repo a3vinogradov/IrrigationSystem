@@ -13,6 +13,7 @@ void CSN74HC595Controller::Setup() {
   pinMode(_pinST, OUTPUT);
 
   digitalWrite(_pinST, LOW);
+  registerWrite();
 }
 
 void CSN74HC595Controller::Exec() {

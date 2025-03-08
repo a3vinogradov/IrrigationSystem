@@ -273,23 +273,18 @@ void CWebController::HandleAction()
   else if (actionType == "testMultiplexor")
   {
     header = "Проверка мультиплексора";
-    infoContent = "Напряжение на мультиплексор подано.";
-    //_MainController->TestPump(true); 
-    infoButtonText = "Читать датчики влажности";
+    infoContent = "</p>";
+    infoContent += "<p>Датчик протечки : ";
+    infoContent += _MainController->GetWaterSensor(1)?"Ок</p>":"Warning!</p>";
+    infoButtonText = "Выключить мультиплексор";
     infoAction = "action.html";
     infoActionType = "testMultiplexorOff";    
   }  
   else if (actionType == "testMultiplexorOff")
   {
     header = "Проверка мультиплексора";
-    infoContent = "</p>";
-    infoContent += "<p>Датчик протечки : Ок</p>";
-    infoContent += "<p>Уровень жидкости 1 : Ок</p>";
-    infoContent += "<p>Уровень жидкости 2 : Ок</p>";
-    infoContent += "<p>Уровень жидкости 3 : Ок</p>";
-    infoContent += "<p> датчики прочитаны, напряжение снято </p>";
-    infoContent += "<p>";
-    //_MainController->TestMultiplexor(); 
+    _MainController->WaterSensorOff();
+    infoContent = "Мультиплексор выключен";
     infoButtonText = "Назад";
     infoAction = "checkcontrols.html";
   }
