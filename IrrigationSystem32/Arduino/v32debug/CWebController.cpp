@@ -5,7 +5,6 @@ CWebController* CWebController::_instance = 0;
 //=======================================
 
 void GHandleRoot() {
-  //gWebController.HandleRoot();
   CWebController::GetInstance()->HandleRoot();
 }
 
@@ -55,7 +54,7 @@ void CWebController::Setup()
 {
   _fsController->Setup();
   _eeController->Setup();
-    delay(100);
+  delay(100);
 
   _eeCurrentData = _eeController->ReadData();
   if(_eeCurrentData.dataKey != EEPROM_KEY)
@@ -80,7 +79,7 @@ void CWebController::Setup()
       Serial.println("WiFi connected");
       Serial.println("IP address: ");
       Serial.println(WiFi.localIP());   
-      WiFi.hostname(_eeCurrentData.apSSID); 
+      WiFi.hostname(LOCALSSID); 
     } else
     {
       Serial.println("");
@@ -89,13 +88,12 @@ void CWebController::Setup()
   }
 
   ConfigureWebServer();
-  _MainController->IrrigationRestart(_eeCurrentData.maxHummidity, _eeCurrentData.targetHummidity, _eeCurrentData.pumpCountMax, _eeCurrentData.pumpOnPeriod, _eeCurrentData.pumpOffPeriod, _eeCurrentData.autoIrrigationDefault);
 }
 
 void CWebController::Exec()
 {
-  _webServer->handleClient();  
-  _extGPO->Exec();
+  _webServer->handleClient(); 
+  _extGPO->Exec(); 
 }
 
 void CWebController::SendContent(int code, String contentType, String content )
@@ -124,27 +122,26 @@ void CWebController::Reset()
 
 String CWebController::FormatPage(String content, String pageName)
 {
-  String ver = "3.0-dev";  
+  String ver = "3.2-dev";  
   String apSSID = _eeCurrentData.apSSID;
   String staSSID = _eeCurrentData.staSSID;
   String staPass = _eeCurrentData.staPassword;
   int currentHummidity = _MainController->GetMHSValue();
-  int targetHummidity = _eeCurrentData.targetHummidity;
-  int maxHummidity = _eeCurrentData.maxHummidity;
+  int targetHummidity = 321; //_eeCurrentData.targetHummidity;
+  int maxHummidity = 432; // _eeCurrentData.maxHummidity;
   bool waterLevel = 1;
-  int pumpCountMax = _eeCurrentData.pumpCountMax;
-  unsigned long pumpOnPeriod = _eeCurrentData.pumpOnPeriod;
-  unsigned long pumpOffPeriod = _eeCurrentData.pumpOffPeriod;  
-  bool autoIrrigationDefault = _eeCurrentData.autoIrrigationDefault;
-  //String irrigationState = _MainController->GetIrrigationState();
+
+  String tagFavicon = "";
+  tagFavicon = _fsController->ReadFile("/favicon.b64");
+  content.replace("<%Favicon%>", tagFavicon); 
 
   content.replace("<%CurrentHummidity%>", String(currentHummidity));  
   content.replace("<%TargetHummidity%>", String(targetHummidity));  
   content.replace("<%MaxHummidity%>", String(maxHummidity));  
-  content.replace("<%PumpCountMax%>", String(pumpCountMax));  
-  content.replace("<%PumpOnPeriod%>", String(pumpOnPeriod));  
-  content.replace("<%PumpoOffPeriod%>", String(pumpOffPeriod));  
-  content.replace("<%AutoIrrigationDefault%>", autoIrrigationDefault?"checked":"");  
+  //content.replace("<%PumpCountMax%>", String(pumpCountMax));  
+  //content.replace("<%PumpOnPeriod%>", String(pumpOnPeriod));  
+  //content.replace("<%PumpoOffPeriod%>", String(pumpOffPeriod));  
+  //content.replace("<%AutoIrrigationDefault%>", autoIrrigationDefault?"checked":"");  
 
   content.replace("<%WaterLevel%>", String(waterLevel?"Ok":"Critical level of water!"));  
   content.replace("<%IrrigationState%>", _MainController->GetIrrigationState());  
@@ -165,10 +162,9 @@ String CWebController::FormatPage(String content, String pageName)
   content.replace("<%APSSID%>", String(apSSID));  
   content.replace("<%STASSID%>", String(staSSID));  
   content.replace("<%STAPassword%>", String(staPass));  
-  content.replace("<%Version%>", String(ver));  
+  content.replace("<%VERSION%>", String(ver));  
 
   content.replace("<%MAC%>", String(WiFi.macAddress()));
-  
   return content;
 }
 
@@ -183,7 +179,7 @@ void CWebController::HandleAction()
 
   // requestInfo
   requestInfo  = "Number of args received:<br>";
-  requestInfo += _webServer->args();      // получить количество параметров
+  requestInfo += _webServer->args();     // получить количество параметров
   requestInfo += "\n<br>";               // переход на новую строку
 
   for (int i = 0; i < _webServer->args(); i++) 
@@ -209,13 +205,13 @@ void CWebController::HandleAction()
     if(_eeController->WriteData(eeData))
     {
       _eeCurrentData = eeData;
-      _MainController->IrrigationRestart(
-                                    _eeCurrentData.maxHummidity,
-                                    _eeCurrentData.targetHummidity,
-                                    _eeCurrentData.pumpCountMax,
-                                    _eeCurrentData.pumpOnPeriod,
-                                    _eeCurrentData.pumpOffPeriod,
-                                    _eeCurrentData.autoIrrigationDefault);
+      // _MainController->IrrigationRestart(
+      //                               _eeCurrentData.maxHummidity,
+      //                               _eeCurrentData.targetHummidity,
+      //                               _eeCurrentData.pumpCountMax,
+      //                               _eeCurrentData.pumpOnPeriod,
+      //                               _eeCurrentData.pumpOffPeriod,
+      //                               _eeCurrentData.autoIrrigationDefault);
     }
 
     infoButtonText = "Назад";
@@ -230,7 +226,7 @@ void CWebController::HandleAction()
     infoAction = "action.html";
     infoActionType = "testIndicatorsOff";    
     //infoAction = "checkcontrols.html";    
-  }
+  } 
   else if (actionType == "testIndicatorsOff")
   {
     header = "Проверка светодиодной индикации";
@@ -253,11 +249,11 @@ void CWebController::HandleAction()
   {
     header = "Проверка звуковой сигнализации";
     infoContent = "Звуковой сигнал не должен повторяться.";
-    _MainController->TestIndicators(false);
+    _MainController->TestBuzzer(false);
     infoButtonText = "Назад";
     infoAction = "checkcontrols.html";    
   }
- else if (actionType == "testPump")
+  else if (actionType == "testPump")
   {
     header = "Проверка насоса";
     infoContent = "Насос должен включиться.";
@@ -274,21 +270,23 @@ void CWebController::HandleAction()
     infoButtonText = "Назад";
     infoAction = "checkcontrols.html";    
   }
-  else if (actionType == "autoIrrigationOn")
+  else if (actionType == "testMultiplexor")
   {
-    header = "Автоматический полив";
-    infoContent = "Режим автоматического полива включен.";
-    _MainController->SetAutoIrrigation(true); 
-    infoButtonText = "Назад";
-    infoAction = "index.html";    
-  }
-  else if (actionType == "autoIrrigationOff")
+    header = "Проверка мультиплексора";
+    infoContent = "</p>";
+    infoContent += "<p>Датчик протечки : ";
+    infoContent += _MainController->GetWaterSensor(1)?"Ок</p>":"Warning!</p>";
+    infoButtonText = "Выключить мультиплексор";
+    infoAction = "action.html";
+    infoActionType = "testMultiplexorOff";    
+  }  
+  else if (actionType == "testMultiplexorOff")
   {
-    header = "Автоматический полив";
-    infoContent = "Режим автоматического полива выключен.";
-    _MainController->SetAutoIrrigation(false); 
+    header = "Проверка мультиплексора";
+    _MainController->WaterSensorOff();
+    infoContent = "Мультиплексор выключен";
     infoButtonText = "Назад";
-    infoAction = "index.html";    
+    infoAction = "checkcontrols.html";
   }
 
   String res = _fsController->ReadFile("/info.html");
@@ -298,6 +296,7 @@ void CWebController::HandleAction()
   }
   else
   { 
+    res.replace("<%Favicon%>", _fsController->ReadFile("/favicon.b64"));     
     res.replace("<%Header%>", header); 
     res.replace("<%InfoContent%>", infoContent); 
     res.replace("<%RequestInfo%>", requestInfo); 
@@ -307,8 +306,6 @@ void CWebController::HandleAction()
     
     _webServer->send(200, "text/html", res);
   }
-
-  //SendContent(200, "text/html", message);    // ответить на HTTP запрос
 }
 
 void CWebController::HandleRoot()
@@ -363,30 +360,6 @@ EEData CWebController::GetDataFromWebServerArgs()
     {
       strcpy(res.staPassword, _webServer->arg(i).c_str());
     }
-    else if( _webServer->argName(i) == "targethummidity")
-    {
-      res.targetHummidity = _webServer->arg(i).toInt();
-    }
-    else if( _webServer->argName(i) == "maxhummidity")
-    {
-      res.maxHummidity = _webServer->arg(i).toInt();
-    }
-    else if( _webServer->argName(i) == "pumpcountmax")
-    {
-      res.pumpCountMax = _webServer->arg(i).toInt();
-    }
-    else if( _webServer->argName(i) == "pumponperiod")
-    {
-      res.pumpOnPeriod = _webServer->arg(i).toInt();
-    }
-    else if( _webServer->argName(i) == "pumpoffperiod")
-    {
-      res.pumpOffPeriod = _webServer->arg(i).toInt();
-    }
-    else if( _webServer->argName(i) == "autoirrigation")
-    {
-      res.autoIrrigationDefault = _webServer->arg(i) == "checked";
-    }    
   }
   return res;
 }

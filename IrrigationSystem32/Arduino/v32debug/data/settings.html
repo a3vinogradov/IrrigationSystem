@@ -2,14 +2,15 @@
   <head>
 	<meta charset="UTF-8" />
     <title>
-	  Settings
+	  Автополивалка (березка) - Настройки
 	</title>
+	<%Favicon%>
 	<link rel="stylesheet" href="style.css" media="all">
   </head>
   <body>
 	<nav class="top-menu">
 		<ul class="menu-main">
-		  <li><p>Меню<p></li>		
+		  <li><p>Автополивалка (березка)<p></li>
 		  <li><a href="index.html">Домашняя</a></li>
 		  <li><a href="settings.html" class="current">Настройки</a></li>
 		  <li><a href="about.html">О проекте</a></li>
@@ -39,18 +40,6 @@
 			<p><label for="ssidsta">SSID</label><input type="text" name="ssidsta" id="ssidsta" value="<%STASSID%>"></p>
 			<p><label for="passwordsta">password</label><input type="password" name="passwordsta" id="passwordsta" value="<%STAPassword%>"></p>
 		</fieldset>
-		
-		<fieldset>
-			<legend>Настройка режима полива </legend><br/>
-			<p><label for="maxhummidity">Максимальное значение влажности почвы </label><input type="text" name="maxhummidity" id="maxhummidity" value="<%MaxHummidity%>"></p>
-			<p><label for="targethummidity">Целевая влажность почвы </label><input type="text" name="targethummidity" id="targethummidity" value="<%TargetHummidity%>"></p>
-			<p>* Максимальное значение должно быть больше целевого</p>
-			<p><label for="pumpcountmax">Количество включений насоса за сессию (MAX) </label><input type="text" name="pumpcountmax" id="pumpcountmax" value="<%PumpCountMax%>"></p>
-			<p><label for="pumponperiod">Продолжительность включения насоса (мс) </label><input type="text" name="pumponperiod" id="pumponperiod" value="<%PumpOnPeriod%>"></p>
-			<p><label for="pumpoffperiod">Продолжительность пауз (мс) </label><input type="text" name="pumpoffperiod" id="pumpoffperiod" value="<%PumpoOffPeriod%>"></p>
-			<p><label for="autoirrigation">Активировать автоматически при рестарте</label><input type="checkbox" id="autoirrigation" name="autoirrigation" value="checked" <%AutoIrrigationDefault%> > </p>
-		</fieldset>
-		
 		<br/>
 		<p><input type="submit" value="Отправить"></p>
 	</fieldset>
@@ -62,6 +51,6 @@
 		<p>ВНИМАНИЕ! Перед началом тестирования программа полива должна быть остановлена.</p>
 		<p><input type="submit" value="Начать"></p>
 	</fieldset>
-    </form>
+    </form>	
   </body>
 </html>

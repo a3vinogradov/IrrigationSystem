@@ -1,0 +1,49 @@
+<html>
+  <head>
+	<meta charset="UTF-8" />
+    <title>
+	  Автополивалка (березка) - Тестирование устройства
+	</title>
+	<%Favicon%>
+	<link rel="stylesheet" href="style.css" media="all">
+  </head>
+  <body>
+	<nav class="top-menu">
+		<ul class="menu-main">
+		  <li><p>Автополивалка (березка)<p></li>		
+		  <li><a href="index.html">Домашняя</a></li>
+		  <li><a href="settings.html">Настройки</a></li>
+		  <li><a href="about.html">О проекте</a></li>
+		</ul>
+	</nav>
+    <h1>Тестирование устройства</h1>
+    <form method="post" action="action.html" class="Formsettings">
+		<input type="hidden" name="actionType" id="actionType" value="testIndicators">
+	<fieldset>
+		<legend>Проверка светодиодной индикации</legend>
+		<p><input type="submit" value="Начать"></p>
+	</fieldset>
+    </form>
+    <form method="post" action="action.html" class="Formsettings">
+		<input type="hidden" name="actionType" id="actionType" value="testBuzzer">
+	<fieldset>
+		<legend>Проверка звуковой сигнализации</legend>
+		<p><input type="submit" value="Начать"></p>
+	</fieldset>
+    </form>  
+    <form method="post" action="action.html" class="Formsettings">
+		<input type="hidden" name="actionType" id="actionType" value="testPump">
+	<fieldset>
+		<legend>Проверка насоса</legend>
+		<p><input type="submit" value="Начать"></p>
+	</fieldset>
+    </form> 
+    <form method="post" action="action.html" class="Formsettings">
+		<input type="hidden" name="actionType" id="actionType" value="testMultiplexor">
+	<fieldset>
+		<legend>Проверка мультиплексора</legend>
+		<p><input type="submit" value="Начать"></p>
+	</fieldset>
+    </form> 
+  </body>
+</html>

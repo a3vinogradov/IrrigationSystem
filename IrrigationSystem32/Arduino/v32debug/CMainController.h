@@ -40,6 +40,8 @@ class CMainController
   String GetIrrigationState();
   String GetBtnSwitchStateText();
   String GetActionTypeState();
+  bool GetWaterSensor(const int sensNumb);
+  void WaterSensorOff();
   void SetAutoIrrigation(const bool isOn);
   void IrrigationRestart(const int maxMoisture, const int targetMoisture, const int pumpCountMax, const int pumpOnPeriod, const int pumpOffPeriod, const bool autoIrrigation );
 };

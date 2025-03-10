@@ -14,11 +14,11 @@ CMainController::CMainController(CMHSController* mhsController, CSN74HC595Contro
   _GPOB = new CGPOExt595(_ExtGPO, 6);
   _GPOA = new CGPOExt595(_ExtGPO, 7);
 
-  _LedR = new CBlinkerController(_GPOF);
-  _LedY = new CBlinkerController(_GPOE);
-  _LedG = new CBlinkerController(_GPOD);
+  _LedR = new CBlinkerController(_GPOC);
+  _LedY = new CBlinkerController(_GPOD);
+  _LedG = new CBlinkerController(_GPOE);
 
-  _Buzzer = new CBlinkerController(_GPOG);
+  _Buzzer = new CBlinkerController(_GPOA);
 
   _Pump = new CBlinkerController(_GPOB);
 
@@ -48,7 +48,7 @@ void CMainController::TestIndicators(bool isON) {
 
 void CMainController::TestBuzzer(bool isON) {
   if (isON) {
-    _Buzzer->SetBlinkMode(false, 500, 1500);
+    _Buzzer->SetBlinkMode(true, 500, 1500);
     _Buzzer->TurnOn(true);
   } else {
     _Buzzer->TurnOff();
@@ -130,6 +130,44 @@ String CMainController::GetActionTypeState(){
       return "Не определено";
   } 
 }
+
+bool CMainController::GetWaterSensor(const int sensNumb)
+{
+  _GPOH->On(); // Подать питание на мультиплексор
+  delay(1);
+  if (sensNumb == 1) // коммутируем заданный в sensNumb вход на выходной пин
+  {
+    _GPOF->On();
+    _GPOG->On();
+  }
+  else if (sensNumb == 2) 
+  {
+    _GPOF->On();
+    _GPOG->Off();
+  }
+  else if (sensNumb == 3) 
+  {
+    _GPOF->Off();
+    _GPOG->On();
+  }
+  else
+  {
+    _GPOF->Off();
+    _GPOG->Off();
+  }
+  delay(1);
+  int res = digitalRead(13);
+  Serial.print("Reading pin 13 = ");
+  Serial.println(res);
+
+  //_GPOH->Off(); // Снять питание с мультиплексора
+
+  return res == HIGH;
+};
+void CMainController::WaterSensorOff()
+{
+  _GPOH->Off();
+};
 
 void CMainController::SetAutoIrrigation(const bool isOn)
 {
