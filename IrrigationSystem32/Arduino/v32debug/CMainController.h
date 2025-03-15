@@ -29,8 +29,10 @@ class CMainController
 
     CIrrigationController* _IrrigationController;
 
+    int _pinMultiplexor;
+
   public:
-  CMainController(CMHSController* mhsController, CSN74HC595Controller* extGPO);
+  CMainController(CMHSController* mhsController, CSN74HC595Controller* extGPO, const int pinMLT);
   int GetMHSValue();
   void TestIndicators(bool isON);
   void TestBuzzer(bool isON); 

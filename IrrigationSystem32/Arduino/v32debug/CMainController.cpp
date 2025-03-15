@@ -1,7 +1,8 @@
 #include "CMainController.h"
 #include "CGPOExt595.h"
 
-CMainController::CMainController(CMHSController* mhsController, CSN74HC595Controller* extGPO) {
+CMainController::CMainController(CMHSController* mhsController, CSN74HC595Controller* extGPO, const int pinMLT) {
+  _pinMultiplexor = pinMLT;
   _MHSController = mhsController;
   _ExtGPO = extGPO;
 
@@ -65,6 +66,7 @@ void CMainController::TestPump(bool isON) {
 }
 
 void CMainController::Setup() {
+  pinMode(_pinMultiplexor, INPUT);
   _LedR->Setup();
   _LedY->Setup();
   _LedG->Setup();
@@ -156,8 +158,8 @@ bool CMainController::GetWaterSensor(const int sensNumb)
     _GPOG->Off();
   }
   delay(1);
-  int res = digitalRead(13);
-  Serial.print("Reading pin 13 = ");
+  int res = digitalRead(_pinMultiplexor);
+  Serial.print("Reading pin 16 = ");
   Serial.println(res);
 
   //_GPOH->Off(); // Снять питание с мультиплексора

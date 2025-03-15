@@ -276,6 +276,12 @@ void CWebController::HandleAction()
     infoContent = "</p>";
     infoContent += "<p>Датчик протечки : ";
     infoContent += _MainController->GetWaterSensor(1)?"Ок</p>":"Warning!</p>";
+    infoContent += "<p>Низкий уровень воды в резервуаре: ";
+    infoContent += _MainController->GetWaterSensor(2)?"Нет воды</p>":"Есть вода</p>";
+    infoContent += "<p>Средний уровень воды в резервуаре: ";
+    infoContent += _MainController->GetWaterSensor(3)?"Нет воды</p>":"Есть вода</p>";
+    infoContent += "<p>Высокий уровень воды в резервуаре: ";
+    infoContent += _MainController->GetWaterSensor(4)?"Нет воды</p>":"Есть вода</p>";
     infoButtonText = "Выключить мультиплексор";
     infoAction = "action.html";
     infoActionType = "testMultiplexorOff";    
@@ -288,6 +294,33 @@ void CWebController::HandleAction()
     infoButtonText = "Назад";
     infoAction = "checkcontrols.html";
   }
+  else if (actionType == "testHummiditySensor")
+  {
+    header = "Проверка датчика влажности";
+    infoContent = "Извлеките датчик влажности из земли и протрите его насухо. Затем, держа датчик за \"грибок\", нажмите кнопку \"Далее\".";
+    infoButtonText = "Далее";
+    infoAction = "action.html";
+    infoActionType = "testHummiditySensorDry";    
+  }
+  else if (actionType == "testHummiditySensorDry")
+  {
+    header = "Проверка датчика влажности";
+    int dryValue = _MainController->GetMHSValue(); // измерение влажности
+    infoContent = "Значение абсолютно сухого датчика: "+ String(dryValue) + " гигропопугаев. Погрузите датчик в стакан с водой и нажмите кнопку \"Далее\".";
+    infoButtonText = "Далее";
+    infoAction = "action.html";
+    infoActionType = "testHummiditySensorWet";    
+  }  
+  else if (actionType == "testHummiditySensorWet")
+  {
+    header = "Проверка датчика влажности";
+    int wetValue = _MainController->GetMHSValue(); // измерение влажности
+    infoContent = "Значение датчика: "+ String(wetValue) + " гигропопугаев. Значение должно быть меньше предыдущего на 200-400 единиц. В противном случае датчик неисправен.";
+    infoButtonText = "Назад";
+    infoAction = "checkcontrols.html";
+  }  
+
+
 
   String res = _fsController->ReadFile("/info.html");
   if (res == "")

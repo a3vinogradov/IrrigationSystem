@@ -21,6 +21,7 @@
 #define PIN_EGPO_DS 14
 #define PIN_EGPO_ST 12
 #define PIN_EGPO_SH 15
+#define PIN_MLT 16
 
 CSN74HC595Controller gExtGPO(PIN_EGPO_DS,PIN_EGPO_ST,PIN_EGPO_SH);
 CSN74HC595Controller *pExtGPO = &gExtGPO; 
@@ -28,7 +29,7 @@ CSN74HC595Controller *pExtGPO = &gExtGPO;
 CMHSController gMHSController;
 CMHSController *pMHSController = &gMHSController;
 
-CMainController gMainController(pMHSController, pExtGPO);
+CMainController gMainController(pMHSController, pExtGPO, PIN_MLT);
 CMainController *pMainController = &gMainController; 
 
 CWebController gWebController(pMainController);
