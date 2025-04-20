@@ -25,6 +25,13 @@ EEData CEEController::GetEmptyData()
   strcpy(res.staSSID, "");   
   strcpy(res.staPassword, ""); 
 
+  res.targetHummidity = 0;
+  res.maxHummidity = 0;
+  res.pumpCountMax = 0;
+  res.pumpOnPeriod = 0;
+  res.pumpOffPeriod = 0;
+  res.autoIrrigationDefault = false;
+
   return res;
 }
 
@@ -36,6 +43,13 @@ EEData CEEController::GetDefaultData()
   strcpy(res.staSSID, "BelkoNet");   
   strcpy(res.staPassword, "liskabelko"); 
     
+  res.targetHummidity = 310;  
+  res.maxHummidity = 400;
+  res.pumpCountMax = 5;
+  res.pumpOnPeriod = 4000;
+  res.pumpOffPeriod = 4000;  
+  res.autoIrrigationDefault = false;
+
   return res;
 }    
 
@@ -75,7 +89,12 @@ String CEEController::EEDataToString(EEData eeData)
   res = res + "apPassword = " + String(eeData.apPassword) + ";\n<br>"; 
   res = res + "staSSID = " + String(eeData.staSSID) + ";\n<br>"; 
   res = res + "staPassword = " + String(eeData.staPassword) + ";\n<br>"; 
-  
+  res = res + "targetHummidity = "  + String(eeData.targetHummidity) + ";\n<br>"; 
+  res = res + "maxHummidity = "  + String(eeData.maxHummidity) + ";\n<br>"; 
+  res = res + "pumpCountMax = "  + String(eeData.pumpCountMax) + ";\n<br>"; 
+  res = res + "pumpOnPeriod = "  + String(eeData.pumpOnPeriod) + ";\n<br>"; 
+  res = res + "pumpOffPeriod = "  + String(eeData.pumpOffPeriod) + ";\n<br>"; 
+  res = res + "autoIrrigationDefault = "  + String(eeData.autoIrrigationDefault) + ";\n<br>";   
   return res;
 }
 

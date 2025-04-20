@@ -19,19 +19,25 @@
     <h1>Автополивалка</h1>
 	
 	<table class="IndexPage">
-	<tr>
-	  <th>Влажность почвы (текущая / целевая)</th>
-	</tr>
-	<tr>
-	   <td><%CurrentHummidity%> / <%TargetHummidity%></td>  
-    </tr>
-	<tr>
-	  <th>Автоматический полив</th>
-	</tr>
-	<tr>
-	  <td>
-	  <p>Состояние : <%IrrigationState%> </p> 
- 	  </td>
+		<tr><th>Влажность почвы (текущая / целевая)</th></tr>
+		<tr><td><%CurrentHummidity%> / <%TargetHummidity%></td></tr>
+		
+		<tr><th>Автоматический полив</th></tr>
+		<tr>
+			<td>
+				<p>Состояние : <%IrrigationState%> </p><br>
+				<p>Датчик протечки: <%SensorWet%> </p>
+			</td>
+		</tr>  
+		
+		<tr><th>Датчики уровня воды в резервуаре</th></tr>
+		<tr>
+			<td>
+				<p>Высокий: <%WaterLevelHigh%></p><br>
+				<p>Средний: <%WaterLevelMiddle%></p><br>
+				<p>Низкий:  <%WaterLevelLow%></p><br>
+			</td>
+		</tr>
 	</table>
 	<div class="dark">
     <form method="post" action="action.html">

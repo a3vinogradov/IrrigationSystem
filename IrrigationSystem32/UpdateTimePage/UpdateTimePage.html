@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Время сервера</title>
+    <script>
+        async function fetchServerTime() {
+            try {
+                const response = await fetch('https://worldtimeapi.org/api/timezone/Europe/Moscow');
+                const data = await response.json();
+                const serverTime = new Date(data.datetime);
+                document.getElementById('time').textContent = serverTime.toLocaleTimeString();
+            } catch (error) {
+                console.error('Ошибка при получении времени:', error);
+                document.getElementById('time').textContent = 'Ошибка загрузки времени';
+            }
+        }
+
+        // Обновляем время каждые 5 секунд
+        setInterval(fetchServerTime, 5000);
+
+        // Вызываем сразу при загрузке страницы
+        window.onload = fetchServerTime;
+    </script>
+</head>
+<body>
+    <h1>Время сервера (Москва):</h1>
+    <p id="time">Загрузка...</p>
+</body>
+</html>

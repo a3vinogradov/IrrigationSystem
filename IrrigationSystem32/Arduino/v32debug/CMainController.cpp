@@ -133,9 +133,9 @@ String CMainController::GetActionTypeState(){
   } 
 }
 
+// Возвращает true/false в зависимости от состояния датчика сухо/влажно
 bool CMainController::GetWaterSensor(const int sensNumb)
 {
-  _GPOH->On(); // Подать питание на мультиплексор
   delay(1);
   if (sensNumb == 1) // коммутируем заданный в sensNumb вход на выходной пин
   {
@@ -159,12 +159,14 @@ bool CMainController::GetWaterSensor(const int sensNumb)
   }
   delay(1);
   int res = digitalRead(_pinMultiplexor);
-  Serial.print("Reading pin 16 = ");
-  Serial.println(res);
-
-  //_GPOH->Off(); // Снять питание с мультиплексора
+  //Serial.print("Reading pin 16 = ");
+  //Serial.println(res);
 
   return res == HIGH;
+};
+void CMainController::WaterSensorOn()
+{
+  _GPOH->On();
 };
 void CMainController::WaterSensorOff()
 {
